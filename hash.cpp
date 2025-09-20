@@ -14,6 +14,12 @@ string HashFun(const string& str)
         h[i] += cByte * 131 + (h[(i+3)%8] ^ h[(i+5)%8]);
     }
 
+    for (int i = 0; i < 16; ++i) {
+        size_t j = i % 8;
+        h[j] ^= ((h[(j+1)%8] << 7) | (h[(j+7)%8] >> 3));
+        h[j] += (h[(j+3)%8] ^ h[(j+5)%8]) + 0x9E3779B97F4A7C15ULL;
+    }
+
     unsigned long long out4[4];
     for (int i = 0; i < 4; ++i) {
         out4[i] = h[i] ^ (h[i+4] << 1) ^ (h[(i+2)%8] >> 1);
@@ -43,4 +49,8 @@ int main()
     return 0;
 }
 
-// konstitucija.txt hash'as: 01df182769b0ab126f0fc9b87bcc1e3280f4288c0d52507ee5626f69c1a1df9d
+
+//   Tuscias failas: febfa30aad69de7e9263d38bb4a0163d6ff45d795e5fc444effa987d78b8fa0a
+//    Failas su "1": feba450d5ac5f27b926667429c8edc2e6fb4335b46f5247aef2c0c5945be882a
+// konstitucija.txt: ed4d7e0ce2417bbc914f6ced8486882b5059d5f5f000652982fefd9a3d40f477
+// konst pakeistas s:fa759b550f70e445b872cfd93dfbfa139fe0ebd96f93f69d67eb13238c89f193
