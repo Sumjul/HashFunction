@@ -4,6 +4,32 @@
 #include <sstream>
 using namespace std;
 
+
+string ProgramStart() {
+    string input;
+    cout << "0 - jeigu norite irasyti teksta" << endl;
+    cout << "1 - jeigu norite atidaryti faila" << endl;
+    int choice;
+    cin >> choice;
+    if (choice == 0) {
+        cout << "Iveskite teksta: " << endl;
+        cin >> input;
+    }
+    else if (choice == 1) {
+        string fileName;
+        getline(cin, fileName);
+        ifstream file(fileName);
+        if (!file) {
+            cerr << "Failas neatsidarė!\n";
+            return 0;
+        }
+        stringstream buffer;
+        buffer << file.rdbuf();
+        input = buffer.str();
+    }
+    return input;
+}
+
 string HashFun(const string& str)
 {
     unsigned long long h[8] = {0x12345678ULL, 0x9ABCDEF0ULL, 0x0FEDCBA9ULL, 0x87654321ULL, 0xA5A5A5A5ULL, 0xC3C3C3C3ULL, 0x5F5F5F5FULL, 0x1B1B1B1BULL};
@@ -32,19 +58,7 @@ string HashFun(const string& str)
 
 int main()
 {
-    string input;
-    cout << "Iveskite failo pavadinima:" << endl;
-    string fileName;
-    getline(cin, fileName);
-    ifstream file(fileName);
-    if (!file) {
-        cerr << "Failas neatsidarė!\n";
-        return 1;
-    }
-    stringstream buffer;
-    buffer << file.rdbuf();
-    input = buffer.str();
-
+    string input = ProgramStart();
     cout << "Hash funkcija: " << HashFun(input) << endl;
     return 0;
 }
