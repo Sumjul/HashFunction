@@ -2,8 +2,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <limits>
 using namespace std;
-
 
 string ProgramStart() {
     string input;
@@ -11,11 +11,13 @@ string ProgramStart() {
     cout << "1 - jeigu norite atidaryti faila" << endl;
     int choice;
     cin >> choice;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     if (choice == 0) {
         cout << "Iveskite teksta: " << endl;
-        cin >> input;
+        getline(cin, input);
     }
     else if (choice == 1) {
+        cout << "Iveskite failo pavadinima: " << endl;
         string fileName;
         getline(cin, fileName);
         ifstream file(fileName);
@@ -32,7 +34,7 @@ string ProgramStart() {
 
 string HashFun(const string& str)
 {
-    unsigned long long h[8] = {0x12345678ULL, 0x9ABCDEF0ULL, 0x0FEDCBA9ULL, 0x87654321ULL, 0xA5A5A5A5ULL, 0xC3C3C3C3ULL, 0x5F5F5F5FULL, 0x1B1B1B1BULL};
+    unsigned long long h[8] = {0x5FAF3C1BULL, 0x6E8D3B27ULL, 0xA1C5E97FULL, 0x4B7D2E95ULL, 0xF2A39C68ULL, 0x3E9B5A7CULL, 0x9D74C5A1ULL, 0x7C1A5F3EULL };
     for (size_t ind = 0; ind < str.size(); ++ind) {
         unsigned char cByte = str[ind];
         size_t i = ind % 8;
@@ -40,10 +42,10 @@ string HashFun(const string& str)
         h[i] += cByte * 131 + (h[(i+3)%8] ^ h[(i+5)%8]);
     }
 
-    for (int i = 0; i < 16; ++i) {
+    for (int i = 0; i < 64; ++i) {
         size_t j = i % 8;
-        h[j] ^= ((h[(j+1)%8] << 7) | (h[(j+7)%8] >> 3));
-        h[j] += (h[(j+3)%8] ^ h[(j+5)%8]) + 0x9E3779B97F4A7C15ULL;
+        h[j] ^= ((h[(j+1)%8] << ((i*7)%61)) | (h[(j+7)%8] >> ((i*5)%53)));
+        h[j] += (h[(j+3)%8] ^ h[(j+5)%8]) + (0x9E3779B97F4A7C15ULL ^ (i * 0xA1C52E95ULL));
     }
 
     unsigned long long out4[4];
@@ -62,9 +64,3 @@ int main()
     cout << "Hash funkcija: " << HashFun(input) << endl;
     return 0;
 }
-
-
-//   Tuscias failas: febfa30aad69de7e9263d38bb4a0163d6ff45d795e5fc444effa987d78b8fa0a
-//    Failas su "1": feba450d5ac5f27b926667429c8edc2e6fb4335b46f5247aef2c0c5945be882a
-// konstitucija.txt: ed4d7e0ce2417bbc914f6ced8486882b5059d5f5f000652982fefd9a3d40f477
-// konst pakeistas s:fa759b550f70e445b872cfd93dfbfa139fe0ebd96f93f69d67eb13238c89f193
