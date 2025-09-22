@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <limits>
+#include <chrono>
 using namespace std;
 
 string ProgramStart() {
@@ -34,6 +35,8 @@ string ProgramStart() {
 
 string HashFun(const string& str)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+    
     unsigned long long h[8] = {0x5FAF3C1BULL, 0x6E8D3B27ULL, 0xA1C5E97FULL, 0x4B7D2E95ULL, 0xF2A39C68ULL, 0x3E9B5A7CULL, 0x9D74C5A1ULL, 0x7C1A5F3EULL };
     for (size_t ind = 0; ind < str.size(); ++ind) {
         unsigned char cByte = str[ind];
@@ -52,6 +55,10 @@ string HashFun(const string& str)
     for (int i = 0; i < 4; ++i) {
         out4[i] = h[i] ^ (h[i+4] << 1) ^ (h[(i+2)%8] >> 1);
     }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+    cout << "Hash funkcijos veikimo laikas: " << duration.count() << " microseconds" << endl;
 
     char out [65];
     snprintf(out, sizeof(out), "%016llx%016llx%016llx%016llx", out4[0], out4[1], out4[2], out4[3]);

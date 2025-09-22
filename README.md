@@ -43,3 +43,20 @@ Pavyzdys su `a.txt`:
 Tas pats galioja visiems kitiems failams (`blank.txt`, `b.txt`, `rnd100000.txt`, `rnd1000000.txt`, `rndF100000.txt`, `rndS100000.txt`).
 
 ## 4. Efektyvumas
+
+1 eil - 2 mkrs
+10 eil - 3 mkrs
+100 eil - 23 mkrs
+789 eil (pilna) - 260 mkrs
+
+Hash funkcijos greitis buvo matuojamas naudojant `konstitucija.txt` failą. Matavau tik pačios hash funkcijos vykdymo laiką (be failo skaitymo) ir kiekvieną bandymą paleidau kelis kartus bei užrašiau vidutinę trukmę mikrosekundėmis.
+
+| Įvedimo dydis (eilučių sk.) | Vidutinis veikimo laikas (µs)|
+|-----------------------------|------------------------------|
+| 1 eilutė                    | 2 µs                         |
+| 10 eilučių                  | 3 µs                         |
+| 100 eilučių                 | 23 µs                        |
+| 789 eilučių (pilnas failas) | 260 µs                       |
+
+Žemiau rezultatai pateikti naudojant grafiką:
+![Hash funkcijos veikimo laikas](grafikas.png)
