@@ -71,4 +71,15 @@ Poros generuotos keturių skirtingų ilgių: 10, 100, 500 ir 1000 simbolių, kie
 | 500              | 0          | 0          | 0          | **0**    |
 | 1000             | 0          | 0          | 0          | **0**    |
 
-## 6. 
+## 6. Lavinos efektas
+
+Lavinos efektas (avalanche effect) – tai testas, kuris parodo, kiek radikaliai pasikeičia hash, jei įvestyje pakeičiame vieną simbolį.
+
+Šiam testui sukuriau papildomą funkciją, kuri sugeneruoja 100 000 atsitiktinių porų, kurių kiekviena skiriasi tik vienu simboliu, hash'ina kiekvieną ir skaičiuoja skirtumus bitų bei hex simbolių lygmeniu.
+Eksperimentas buvo atliktas su 100 simbolių ilgio poromis, kiekviena pora tik viena simbolio pakeitimu skyrėsi nuo kitos.
+
+| Metrika   | Bitai (%)      | Hex’ai (%)     |
+|-----------|----------------|----------------|
+| Min       | 46.09 – 46.88  | 76.56 – 78.12  |
+| Max       | 83.98 – 84.38  | 100            |
+| Vidurkis  | 66.01 – 66.03  | 93.74 – 93.76  |

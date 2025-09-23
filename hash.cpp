@@ -66,12 +66,64 @@ void Collision(size_t len)
     cout << "100 000 porose rasta " << collisions << " koliziju" << endl;
 }
 
+void AvalancheTest()
+{
+    size_t len = 100;
+    size_t minBits = SIZE_MAX, maxBits = 0, sumBits = 0;
+    size_t minHex = SIZE_MAX, maxHex = 0, sumHex = 0;
+
+    for (size_t i = 0; i < 100000; ++i) {
+        string a = RandomString(len);
+        string b = a;
+        size_t pos = rand() % len;
+        static const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        char newChar;
+        do {
+            newChar = chars[rand() % chars.size()];
+        }
+        while (newChar == b[pos]);
+        b[pos] = newChar;
+
+        string ha = HashFun(a);
+        string hb = HashFun(b);
+        cout << a << " " << b << " | " << ha << " " << hb << endl;
+
+        size_t bitDif = 0;
+        for (size_t j = 0; j < ha.size(); ++j) {
+            unsigned char x = static_cast<unsigned char>(ha[j]);
+            unsigned char y = static_cast<unsigned char>(hb[j]);
+            unsigned char dif = x^y;
+            int c = 0;
+            unsigned char v = dif;
+            while (v) {
+                c += v & 1;
+                v >>= 1;
+            }
+            bitDif += c;
+        }
+        size_t hexDif = 0;
+        for (size_t j = 0; j < ha.size(); ++j) {
+            if (ha[j] != hb[j]) ++hexDif;
+        }
+
+        minBits = min(minBits, bitDif);
+        maxBits = max(maxBits, bitDif);
+        sumBits += bitDif;
+        minHex = min(minHex, hexDif);
+        maxHex = max(maxHex, hexDif);
+        sumHex += hexDif;
+    }
+    cout << "Bitai: min " << (minBits / 256.0) * 100.0 << "%, max " << (maxBits / 256.0) * 100.0 << "%, vidurkis " << (sumBits / 100000.0 / 256.0) * 100.0 << "%" << endl;
+    cout << "Hex'ai: min " << (minHex / 64.0) * 100.0 << "%, max " << (maxHex / 64.0) * 100.0 << "%, vidurkis " << (sumHex / 100000.0 / 64.0) * 100.0 << "%" << endl;
+}
+
 string ProgramStart()
 {
     string input;
     cout << "0 - jeigu norite irasyti teksta" << endl;
     cout << "1 - jeigu norite atidaryti faila" << endl;
     cout << "2 - koliziju testas" << endl;
+    cout << "3 - lavinos efekto testas" << endl;
     int choice;
     cin >> choice;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -92,7 +144,7 @@ string ProgramStart()
         buffer << file.rdbuf();
         input = buffer.str();
     }
-    else if (choice == 2) {
+    if (choice == 2) {
         cout << "Pasirinkite string'o ilgi (10/50/100/1000): " << endl;
         size_t len;
         cin >> len;
@@ -101,6 +153,9 @@ string ProgramStart()
             return {};
         }
         Collision(len);
+    }
+    else if (choice == 3) {
+        AvalancheTest();
     }
     return input;
 }
