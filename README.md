@@ -44,11 +44,6 @@ Tas pats galioja visiems kitiems failams (`blank.txt`, `b.txt`, `rnd100000.txt`,
 
 ## 4. Efektyvumas
 
-1 eil - 2 mkrs
-10 eil - 3 mkrs
-100 eil - 23 mkrs
-789 eil (pilna) - 260 mkrs
-
 Hash funkcijos greitis buvo matuojamas naudojant `konstitucija.txt` failą. Matavau tik pačios hash funkcijos vykdymo laiką (be failo skaitymo) ir kiekvieną bandymą paleidau kelis kartus bei užrašiau vidutinę trukmę mikrosekundėmis.
 
 | Įvedimo dydis (eilučių sk.) | Vidutinis veikimo laikas (µs)|
@@ -60,3 +55,20 @@ Hash funkcijos greitis buvo matuojamas naudojant `konstitucija.txt` failą. Mata
 
 Žemiau rezultatai pateikti naudojant grafiką:
 ![Hash funkcijos veikimo laikas](grafikas.png)
+
+## 5. Kolizijų paieška
+
+Šiame etape patikrinau, ar mano sukurta hash funkcija sukuria skirtingus hash’us atsitiktinėms įvestims.
+
+Iš pradžių papildžiau programos kodą, pridėdamas naujas funkcijas, kurios kartu generuoja po 100 000 atsitiktinių string porų, kiekvieną porą hash'uoja ir tikrina ar nebuvo identiškų hash'ų.
+
+Poros generuotos keturių skirtingų ilgių: 10, 100, 500 ir 1000 simbolių, kiekvienam ilgiui atlikau po 3 bandymus, neaptikta ne vienos kolizijos:
+
+| Ilgis (simbolių) | Bandymas 1 | Bandymas 2 | Bandymas 3 | Vidurkis |
+|------------------|-----------:|-----------:|-----------:|---------:|
+| 10               | 0          | 0          | 0          | **0**    |
+| 100              | 0          | 0          | 0          | **0**    |
+| 500              | 0          | 0          | 0          | **0**    |
+| 1000             | 0          | 0          | 0          | **0**    |
+
+## 6. 

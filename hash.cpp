@@ -4,34 +4,8 @@
 #include <sstream>
 #include <limits>
 #include <chrono>
+#include <random>
 using namespace std;
-
-string ProgramStart() {
-    string input;
-    cout << "0 - jeigu norite irasyti teksta" << endl;
-    cout << "1 - jeigu norite atidaryti faila" << endl;
-    int choice;
-    cin >> choice;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    if (choice == 0) {
-        cout << "Iveskite teksta: " << endl;
-        getline(cin, input);
-    }
-    else if (choice == 1) {
-        cout << "Iveskite failo pavadinima: " << endl;
-        string fileName;
-        getline(cin, fileName);
-        ifstream file(fileName);
-        if (!file) {
-            cerr << "Failas neatsidarė!\n";
-            return 0;
-        }
-        stringstream buffer;
-        buffer << file.rdbuf();
-        input = buffer.str();
-    }
-    return input;
-}
 
 string HashFun(const string& str)
 {
@@ -58,11 +32,77 @@ string HashFun(const string& str)
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-    cout << "Hash funkcijos veikimo laikas: " << duration.count() << " microseconds" << endl;
+    //cout << "Hash funkcijos veikimo laikas: " << duration.count() << " microseconds" << endl;
 
     char out [65];
     snprintf(out, sizeof(out), "%016llx%016llx%016llx%016llx", out4[0], out4[1], out4[2], out4[3]);
     return string(out);
+}
+
+string RandomString(size_t len)
+{
+    static const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    static mt19937_64 rng{random_device{}()};
+    static uniform_int_distribution<size_t> dist (0, chars.size()-1);
+
+    string s;
+    s.reserve(len);
+    for (size_t i=0; i<len; ++i) {
+        s += chars[dist(rng)];
+    }
+    return s;
+}
+
+void Collision(size_t len)
+{
+    size_t collisions = 0;
+    for (size_t i = 0; i < 100000; ++i) {
+        string a = RandomString(len);
+        string b = RandomString(len);
+        //cout << a << " " << b << " | " << HashFun(a) << " " << HashFun(b) << endl;
+        if (HashFun(a) == HashFun(b))
+        ++collisions;
+    }
+    cout << "100 000 porose rasta " << collisions << " koliziju" << endl;
+}
+
+string ProgramStart()
+{
+    string input;
+    cout << "0 - jeigu norite irasyti teksta" << endl;
+    cout << "1 - jeigu norite atidaryti faila" << endl;
+    cout << "2 - koliziju testas" << endl;
+    int choice;
+    cin >> choice;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    if (choice == 0) {
+        cout << "Iveskite teksta: " << endl;
+        getline(cin, input);
+    }
+    if (choice == 1) {
+        cout << "Iveskite failo pavadinima: " << endl;
+        string fileName;
+        getline(cin, fileName);
+        ifstream file(fileName);
+        if (!file) {
+            cerr << "Failas neatsidarė!\n";
+            return 0;
+        }
+        stringstream buffer;
+        buffer << file.rdbuf();
+        input = buffer.str();
+    }
+    else if (choice == 2) {
+        cout << "Pasirinkite string'o ilgi (10/50/100/1000): " << endl;
+        size_t len;
+        cin >> len;
+        if (len!=10 && len!=50 && len!=100 && len!=1000) {
+            cerr << "Netinkamas ilgis" << endl;
+            return {};
+        }
+        Collision(len);
+    }
+    return input;
 }
 
 int main()
