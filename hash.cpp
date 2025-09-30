@@ -86,7 +86,7 @@ void AvalancheTest()
 
         string ha = HashFun(a);
         string hb = HashFun(b);
-        cout << a << " " << b << " | " << ha << " " << hb << endl;
+        //cout << a << " " << b << " | " << ha << " " << hb << endl;
 
         size_t bitDif = 0;
         for (size_t j = 0; j < ha.size(); ++j) {
@@ -117,6 +117,23 @@ void AvalancheTest()
     cout << "Hex'ai: min " << (minHex / 64.0) * 100.0 << "%, max " << (maxHex / 64.0) * 100.0 << "%, vidurkis " << (sumHex / 100000.0 / 64.0) * 100.0 << "%" << endl;
 }
 
+string HidingTest()
+{
+    string input;
+    cout << "Iveskite slaptazodi: ";
+    getline(cin, input);
+
+    string salt = RandomString(16);
+    string combined = input + salt;
+    string hash = HashFun(combined);
+
+    cout << "Input: " << input << endl;
+    cout << "Salt: " << salt << endl;
+    cout << "Hash(input+salt): " << hash << endl;
+
+    return hash;
+}
+
 string ProgramStart()
 {
     string input;
@@ -124,6 +141,7 @@ string ProgramStart()
     cout << "1 - jeigu norite atidaryti faila" << endl;
     cout << "2 - koliziju testas" << endl;
     cout << "3 - lavinos efekto testas" << endl;
+    cout << "4 - negriztamumo testas" << endl;
     int choice;
     cin >> choice;
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -154,8 +172,11 @@ string ProgramStart()
         }
         Collision(len);
     }
-    else if (choice == 3) {
+    if (choice == 3) {
         AvalancheTest();
+    }
+    else if (choice == 4) {
+        HidingTest();
     }
     return input;
 }

@@ -8,7 +8,7 @@
 
 ```cpp
 FUNCTION HashFun(input_string):
-  
+
 h[0..7] ← {0x5FAF3C1BULL, 0x6E8D3B27ULL, 0xA1C5E97FULL, 0x4B7D2E95ULL, 0xF2A39C68ULL, 0x3E9B5A7CULL, 0x9D74C5A1ULL, 0x7C1A5F3EULL}
 ```
 
@@ -57,7 +57,7 @@ END
 
 Eksperimentams sukuriau kelis failus su skirtingu turiniu:
 
-| Failo pavadinimas | Turinys / paskirtis                                           |
+| Failo pavadinimas | Turinys                                                       |
 |-------------------|---------------------------------------------------------------|
 | `blank.txt`       | Tuščias failas                                                |
 | `a.txt`           | Viena mažoji raidė **a**                                      |
@@ -67,11 +67,11 @@ Eksperimentams sukuriau kelis failus su skirtingu turiniu:
 | `rndF100000.txt`  | 100 000 atsitiktinių simbolių                                 |
 | `rndS100000.txt`  | Kaip rndF100000.txt, bet pakeistas 75 000-asis simbolis       |
 
-## 2.  Išvedimo dydis
+## 2. Išvedimo dydis
 
 Paleidau savo HashFun tuščiam failui, failui su a, failui su b ir failams su 100 000 bei 1 000 000 atsitiktinių simbolių. Kiekvienu atveju gauta 64 hex'ų eilutė. Tai atitinka 256 bitų ilgį ir įrodo, kad išvedimo dydis nepriklauso nuo įvesties.
 
-| Failas          | Hash rezultatas (pavyzdys)                                      |
+| Failas          | Hash rezultatas                                                 |
 |-----------------|-----------------------------------------------------------------|
 | `blank.txt`     |e1e10ec33852dafdad0a90ef0edf56b9f7c1425813bc42d0a67386e5c1269b78 |
 | `a.txt`         |13fbc56937664ae5ce4503508cf94ba6b82eaa19b9bc3c5bb8a7950b485df478 |
@@ -132,7 +132,25 @@ Eksperimentas buvo atliktas su 100 simbolių ilgio poromis, kiekviena pora tik v
 | Max       | 83.98 – 84.38  | 100            |
 | Vidurkis  | 66.01 – 66.03  | 93.74 – 93.76  |
 
-## 7. Išvados
+## 7. Negrįžtamumo demonstracija (hiding)
+
+Patikrinti, ar pridėjus salt prie įvesties (`input + salt`) gaunamas maišos rezultatas neleidžia praktiškai atkurti pradinio input ir ar skirtingi salt'ai duoda skirtingus hash'us.
+
+Žemiau pateikti eksperimento rezultatai rodo, kad tas pats pradinis tekstas, pridėjus skirtingus salt, generuoja visiškai skirtingus hash'us ir tai patvirtina hiding savybę. Be žinomo salt, atstatyti pradinį tekstą iš vieno hash'o praktiškai neįmanoma.
+
+| Įvestis | Salt'as          | Hash'as                                                          |
+|---------|------------------|------------------------------------------------------------------|
+| pasword | pOOncF7F2H55pEUE | 80fcc33f8e238163bcae11570232e9ad310df28866cef2d0f54706b306051cbb |
+| pasword | l76rLOoqthxPu8yC | ed0e2259fde8eaf65acc316b9016cefaf67e6d86dcd1aa18cbf3c71ed5a9368a |
+| pasword | kjJ6snQ0I7X2MCWa | 2b009597db9415515ca8271ff7b9736e83616fe102c0dd98f3e6799705b4352c |
+| 123     | r36gpAswUd8SOjHq | 4f3ebcd03e36c2397d701ea6b55989919547e1e92dafc31214353286503d37f2 |
+| 123     | Wk5cQnko9EJ8FG5g | 9f53d30556cd21034ceb58e20a04aa572d3f140c224f2c161548cdcffeb1dcc9 |
+| 123     | rCXApDNNxUTA4rOT | e45a2c0ef5e5439ec024cc6775d0ad9c2cdcc62e88bde93e367026f8f0f30485 |
+| a       | AwnYSIuL6sWVHsfZ | 62ab3af5b0d3209781d3c4334cd98de8228fe13530f7472f1785e8e584ac4eac |
+| a       | zC3V6kgK2EVbHe4E | 4491c9f51b7d8c1345ee3796933fa39af1ef507f1e6572ec9c19f8e7a0054b56 |
+| a       | t7ggOCsebvov3fbQ | 564421f0695e1cb819a52d5fd16afbfdde3536a7dce978755f08497f28108847 |
+
+## 8. Išvados
 
 ### Stipriosios pusės
 
