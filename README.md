@@ -4,47 +4,48 @@
 
 **HashFun funkcija paima įvesties tekstą ir maišo jo baitus su aštuonių 64 bitų vidinių kintamųjų masyvu, atlikdama daugkartinius bitų poslinkius, XOR bei aritmetines operacijas. Po dviejų maišymo etapų ji sujungia gautas tarpines reikšmes į keturis 64 bitų blokus ir grąžina 256 bitų (64 simbolių šešioliktainį) maišos rezultatą.**
 
-- Pradinė aštuonių 64 bitų registrų inicializacija su konstantomis
+- Pradinė aštuonių 64 bitų registrų inicializacija su konstantomis:
 
 ```cpp
 FUNCTION HashFun(input_string):
-
-h[0..7] ← {0x5FAF3C1BULL, 0x6E8D3B27ULL, 0xA1C5E97FULL, 0x4B7D2E95ULL, 0xF2A39C68ULL, 0x3E9B5A7CULL, 0x9D74C5A1ULL, 0x7C1A5F3EULL}
+    seed[0..7] ← {0x5FAF3C1BULL, 0x6E8D3B27ULL, 0xA1C5E97FULL, 0x4B7D2E95ULL, 0xF2A39C68ULL, 0x3E9B5A7CULL, 0x9D74C5A1ULL, 0x7C1A5F3EULL}
 ```
 
-- Pagrindinis maišymas su kiekvienu įvesties simboliu
+- Pagrindinis maišymas su kiekvienu įvesties simboliu:
 
 ```cpp
-FOR ind FROM 0 TO input_string.length − 1:
-    c ← byte value of input_string[ind]
-    i ← ind MOD 8
-    h[i] ← h[i] XOR ( (h[(i+1) mod 8] << 7) OR (h[(i+7) mod 8] >> 3) )
-    h[i] ← h[i] + (c * 131) + ( h[(i+3) mod 8] XOR h[(i+5) mod 8] )
+    FOR i FROM 0 TO input_string.length − 1:
+        c ← byte value of input_string[i]
+        ind ← i MOD 8
+        seed[ind] ← seed[ind] XOR ( (seed[(ind + 1) MOD 8] << 7) OR (seed[(ind + 7) MOD 8] >> 3) )
+        seed[ind] ← seed[ind] + (cByte * 131) + ( seed[(ind + 3) MOD 8] XOR seed[(ind + 5) MOD 8] )
+    END FOR
 ```
 
-- Papildomi 64 maišymo raundai be naujų duomenų
+- Papildomi 64 maišymo raundai be naujų duomenų:
 
 ```cpp
-FOR i FROM 0 TO 63:
-    j ← i MOD 8
-    h[j] ← h[j] XOR ( (h[(j+1) mod 8] << (i*7) MOD 61) OR (h[(j+7) mod 8] >> (i*5) MOD 53) )
-    h[j] ← h[j] + ( h[(j+3) mod 8] XOR h[(j+5) mod 8] ) + (0x9E3779B97F4A7C15ULL XOR (i * 0xA1C52E95ULL))
+    FOR i FROM 0 TO 63:
+        ind ← i MOD 8
+        seed[ind] ← seed[ind] XOR ( (seed[(ind + 1) MOD 8] << (i * 7) MOD 61) OR (seed[(ind + 7) MOD 8] >> (i * 5) MOD 53) )
+        seed[ind] ← seed[ind] + ( seed[(ind + 3) MOD 8] XOR seed[(ind + 5) MOD 8] ) + (0x9E3779B97F4A7C15ULL XOR (i * 0xA1C52E95ULL))
+    END FOR
 ```
 
-- Išvesties suspaudimas į keturis galutinius 64 bitų žodžius
+- Išvesties suspaudimas į keturis galutinius 64 bitų žodžius:
 
 ```cpp
-FOR i FROM 0 TO 3:
-        out4[i] ← h[i] XOR (h[i+4] << 1) XOR (h[(i+2) mod 8] >> 1)
+    FOR i FROM 0 TO 3:
+        out4[i] ← seed[i] XOR (seed[i + 4] << 1) XOR (seed[(i + 2) MOD 8] >> 1)
+    END FOR
 ```
 
-- Sujungimas į vieną 256 bitų (64 hex) eilutę
+- Sujungimas į vieną 256 bitų (64 hex) eilutę:
 
 ```cpp
-    hex_out ← format_as_16hex(out4[0]) || format_as_16hex(out4[1])
-               || format_as_16hex(out4[2]) || format_as_16hex(out4[3])
+    hex_out ← format_as_16hex(out4[0]) || format_as_16hex(out4[1]) || format_as_16hex(out4[2]) || format_as_16hex(out4[3])
     RETURN hex_out
-END
+END FUNCTION
 ```
 
 ## Eksperimentinis tyrimas
@@ -91,10 +92,12 @@ Abi funkcijos yra deterministinės – ta pati įvestis visada duoda tą patį i
 Pavyzdys su `a.txt`, abu kartus gautas identiškas rezultatas:
 
 - **HashFun:**
+
 13fbc56937664ae5ce4503508cf94ba6b82eaa19b9bc3c5bb8a7950b485df478
 13fbc56937664ae5ce4503508cf94ba6b82eaa19b9bc3c5bb8a7950b485df478
 
 - **SHA-256:**
+
 ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
 ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
 
