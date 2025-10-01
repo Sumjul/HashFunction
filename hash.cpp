@@ -6,6 +6,7 @@
 #include <chrono>
 #include <random>
 #include <iomanip>
+#include <functional>
 #include <openssl/sha.h>
 using namespace std;
 
@@ -37,9 +38,27 @@ string HashFun(const string& str)
 
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-    cout << "Hash funkcijos veikimo laikas: " << duration.count() << " microseconds" << endl;
-    
+    //cout << "HashFun veikimo laikas: " << duration.count() << " microseconds" << endl;
+
     return string(out);
+}
+
+string sha256(const string &input)
+{
+    auto start = std::chrono::high_resolution_clock::now();
+
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256((const unsigned char*)input.c_str(), input.size(), hash);
+    ostringstream oss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+        oss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+    //cout << "SHA-256 veikimo laikas: " << duration.count() << " microseconds" << endl;
+
+    return oss.str(); 
 }
 
 string RandomString(size_t len)
@@ -59,27 +78,33 @@ string RandomString(size_t len)
 void Collision(size_t len)
 {
     size_t collisions = 0;
+    size_t collisionsSha = 0;
     for (size_t i = 0; i < 100000; ++i) {
         string a = RandomString(len);
         string b = RandomString(len);
-        //cout << a << " " << b << " | " << HashFun(a) << " " << HashFun(b) << endl;
+        //cout << a << " " << b << " | " << HashFun(a) << " " << HashFun(b) << " " << sha256(a) << " " << sha256(b) << endl;
+
         if (HashFun(a) == HashFun(b))
-        ++collisions;
+            ++collisions;
+
+        if (sha256(a) == sha256(b))
+            ++collisionsSha;
     }
-    cout << "100 000 porose rasta " << collisions << " koliziju" << endl;
+    cout << "100 000 porose rasta " << collisions << " koliziju (HashFun)" << endl;
+    cout << "100 000 porose rasta " << collisionsSha << " koliziju (SHA-256)" << endl;
 }
 
-void AvalancheTest()
+void AvalancheTest(std::function<string(const string&)> Fun)
 {
     size_t len = 100;
     size_t minBits = SIZE_MAX, maxBits = 0, sumBits = 0;
     size_t minHex = SIZE_MAX, maxHex = 0, sumHex = 0;
 
+    static const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     for (size_t i = 0; i < 100000; ++i) {
         string a = RandomString(len);
         string b = a;
         size_t pos = rand() % len;
-        static const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         char newChar;
         do {
             newChar = chars[rand() % chars.size()];
@@ -87,8 +112,8 @@ void AvalancheTest()
         while (newChar == b[pos]);
         b[pos] = newChar;
 
-        string ha = HashFun(a);
-        string hb = HashFun(b);
+        string ha = Fun(a);
+        string hb = Fun(b);
         //cout << a << " " << b << " | " << ha << " " << hb << endl;
 
         size_t bitDif = 0;
@@ -120,7 +145,7 @@ void AvalancheTest()
     cout << "Hex'ai: min " << (minHex / 64.0) * 100.0 << "%, max " << (maxHex / 64.0) * 100.0 << "%, vidurkis " << (sumHex / 100000.0 / 64.0) * 100.0 << "%" << endl;
 }
 
-string HidingTest()
+void HidingTest()
 {
     string input;
     cout << "Iveskite slaptazodi: ";
@@ -128,13 +153,13 @@ string HidingTest()
 
     string salt = RandomString(16);
     string combined = input + salt;
-    string hash = HashFun(combined);
+    string hash1 = HashFun(combined);
+    string hash2 = sha256(combined);
 
     cout << "Input: " << input << endl;
     cout << "Salt: " << salt << endl;
-    cout << "Hash(input+salt): " << hash << endl;
-
-    return hash;
+    cout << "HashFun (input+salt): " << hash1 << endl;
+    cout << "SHA-256 (input+salt): " << hash2 <<endl;
 }
 
 string ProgramStart()
@@ -176,7 +201,10 @@ string ProgramStart()
         Collision(len);
     }
     if (choice == 3) {
-        AvalancheTest();
+        cout << "--- HashFun rezultatai: " << endl;
+        AvalancheTest(HashFun);
+        cout << "--- SHA-256 rezultatai: " << endl;
+        AvalancheTest(sha256);
     }
     else if (choice == 4) {
         HidingTest();
@@ -184,29 +212,12 @@ string ProgramStart()
     return input;
 }
 
-string sha256(const string &input)
-{
-    auto start = std::chrono::high_resolution_clock::now();
-
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256((const unsigned char*)input.c_str(), input.size(), hash);
-    ostringstream oss;
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
-        oss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
-    }
-
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-    cout << "Hash funkcijos veikimo laikas: " << duration.count() << " microseconds" << endl;
-
-    return oss.str(); 
-}
-
-
 int main()
 {
     string input = ProgramStart();
+    if (input != "") {
     cout << "Hashfun rezultatas: " << HashFun(input) << endl;
-    cout << "SH-A256 rezultatas: " << sha256(input) << endl;
+    cout << "SHA-256 rezultatas: " << sha256(input) << endl;
+    }
     return 0;
 }

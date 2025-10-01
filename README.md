@@ -49,7 +49,7 @@ END
 
 ## Eksperimentinis tyrimas
 
-Šiame projekte tiriama mano sukurta HashFun. Tikslas – įvertinti jos savybes pagal užduoties reikalavimus ir palyginti jas su standartine **SHA-256** funkcija.
+Šiame projekte tiriama mano sukurta **HashFun**. Tikslas – įvertinti jos savybes pagal užduoties reikalavimus ir palyginti jas su standartine **SHA-256** funkcija.
 
 ---
 
@@ -60,8 +60,8 @@ Eksperimentams sukuriau kelis failus su skirtingu turiniu:
 | Failo pavadinimas | Turinys                                                       |
 |-------------------|---------------------------------------------------------------|
 | `blank.txt`       | Tuščias failas                                                |
-| `a.txt`           | Viena mažoji raidė **a**                                      |
-| `b.txt`           | Viena mažoji raidė **b**                                      |
+| `a.txt`           | Viena mažoji raidė a                                          |
+| `b.txt`           | Viena mažoji raidė b                                          |
 | `rnd100000.txt`   | 100 000 atsitiktinių simbolių (raidės, skaičiai, ženklai)     |
 | `rnd1000000.txt`  | 1 000 000 atsitiktinių simbolių                               |
 | `rndF100000.txt`  | 100 000 atsitiktinių simbolių                                 |
@@ -90,11 +90,11 @@ Tai įrodo, kad abi funkcijos išlaiko pastovų išvedimo ilgį nepriklausomai n
 Abi funkcijos yra deterministinės – ta pati įvestis visada duoda tą patį išvedimą.
 Pavyzdys su `a.txt`, abu kartus gautas identiškas rezultatas:
 
-- **HashFun**
+- **HashFun:**
 13fbc56937664ae5ce4503508cf94ba6b82eaa19b9bc3c5bb8a7950b485df478
 13fbc56937664ae5ce4503508cf94ba6b82eaa19b9bc3c5bb8a7950b485df478
 
-- **SHA-256 (2 kartus):**
+- **SHA-256:**
 ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
 ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
 
@@ -102,7 +102,7 @@ Tas pats galioja visiems kitiems failams (`blank.txt`, `b.txt`, `rnd100000.txt`,
 
 ## 4. Efektyvumas
 
-Matavau hash funkcijų veikimo laiką naudojant `konstitucija.txt` failą. Matavau tik pačios hash funkcijos vykdymo laiką (be failo skaitymo) ir kiekvieną bandymą paleidau kelis kartus bei užrašiau vidutinę trukmę mikrosekundėmis.
+Matavau hashavimo funkcijų veikimo laiką naudojant `konstitucija.txt` failą. Matavau tik pačios hashavimo funkcijos vykdymo laiką (be failo skaitymo) ir kiekvieną bandymą paleidau kelis kartus bei užrašiau vidutinę trukmę mikrosekundėmis.
 
 | Įvedimo dydis (eilučių sk.) | HashFun vidutinis veikimo laikas (µs)| SHA-256 vidutinis veikimo laikas (µs)|
 |-----------------------------|--------------------------------------|--------------------------------------|
@@ -123,15 +123,15 @@ Rezultatai rodo, kad mažiems failams HashFun yra daug greitesnė už SHA-256. T
 Žemiau rezultatai pateikti naudojant grafiką:
 ![HashFun veikimo laikas](grafikas.png)
 
-----------------------------------------
-
 ## 5. Kolizijų paieška
 
-Šiame etape patikrinau, ar mano sukurta HashFun sukuria skirtingus hash’us atsitiktinėms įvestims.
+Šiame etape tikrinau, ar mano sukurta HashFun ir standartinė SHA-256 funkcija sukuria skirtingus hash’us atsitiktinėms įvestims.
 
-Iš pradžių papildžiau programos kodą, pridėdamas naujas funkcijas, kurios kartu generuoja po 100 000 atsitiktinių string porų, kiekvieną porą hash'uoja ir tikrina ar nebuvo identiškų hash'ų.
+Iš pradžių papildžiau programos kodą, pridėdamas naujas funkcijas, kurios generuoja po 100 000 atsitiktinių string porų, kiekvieną porą hash'uoja ir tikrina ar nebuvo identiškų hash'ų.
 
-Poros generuotos keturių skirtingų ilgių: 10, 100, 500 ir 1000 simbolių, kiekvienam ilgiui atlikau po 3 bandymus, neaptikta ne vienos kolizijos:
+Poros generuotos keturių skirtingų ilgių: 10, 100, 500 ir 1000 simbolių, kiekvienam ilgiui atlikau po 3 bandymus su HashFun ir SHA-256, neaptikta ne vienos kolizijos:
+
+- **HashFun**
 
 | Ilgis (simbolių) | Bandymas 1 | Bandymas 2 | Bandymas 3 | Vidurkis |
 |------------------|-----------:|-----------:|-----------:|---------:|
@@ -140,47 +140,68 @@ Poros generuotos keturių skirtingų ilgių: 10, 100, 500 ir 1000 simbolių, kie
 | 500              | 0          | 0          | 0          | **0**    |
 | 1000             | 0          | 0          | 0          | **0**    |
 
+- **SHA-256**
+
+| Ilgis (simbolių) | Bandymas 1 | Bandymas 2 | Bandymas 3 | Vidurkis |
+|------------------|-----------:|-----------:|-----------:|---------:|
+| 10               | 0          | 0          | 0          | **0**    |
+| 100              | 0          | 0          | 0          | **0**    |
+| 500              | 0          | 0          | 0          | **0**    |
+| 1000             | 0          | 0          | 0          | **0**    |
+
+Taigi, HashFun bandymuose neaptikta jokių kolizijų (nors teoriškai dideliuose duomenų kiekiuose jos bus aptiktos) ir SHA-256 taip pat neaptikta jokių kolizijų, kaip ir tikėtasi iš kriptografiškai saugios funkcijos, nes niekas pasaulyje kol kas nerado kolizijų SHA-256 algoritme.
+
 ## 6. Lavinos efektas
 
 Lavinos efektas (avalanche effect) – tai testas, kuris parodo, kiek radikaliai pasikeičia rezultatas, jei įvestyje pakeičiame vieną simbolį.
 
 Šiam testui sukuriau papildomą funkciją, kuri sugeneruoja 100 000 atsitiktinių porų, kurių kiekviena skiriasi tik vienu simboliu, hash'ina kiekvieną ir skaičiuoja skirtumus bitų bei hex simbolių lygmeniu.
-Eksperimentas buvo atliktas su 100 simbolių ilgio poromis, kiekviena pora tik viena simbolio pakeitimu skyrėsi nuo kitos.
+Eksperimentas buvo atliktas su 100 simbolių ilgio poromis, kiekvienoje poroje skyrėsi tik vienas simbolis.
 
-| Metrika   | Bitai (%)      | Hex’ai (%)     |
-|-----------|----------------|----------------|
-| Min       | 46.09 – 46.88  | 76.56 – 78.12  |
-| Max       | 83.98 – 84.38  | 100            |
-| Vidurkis  | 66.01 – 66.03  | 93.74 – 93.76  |
+| Metrika   | HashFun Bitai (%) | SHA-256 Bitai (%) | HashFun Hex’ai (%)| SHA-256 Hex’ai (%)|
+|-----------|-------------------|-------------------|-------------------|-------------------|
+| Min       | 46.09 – 46.88     | 46.87 - 78.82     | 76.56 – 78.12     | 75 - 76.56        |
+| Max       | 83.98 – 84.38     | 83.98 - 85.15     | 100               | 100               |
+| Vidurkis  | 66.02             | 66.03             | 93.75             | 93.74             |
+
+Pagal teoriją ir viešai prieinamus šaltinius, idealiu atveju vidutinis bitų pasikeitimas turėtų siekti apie 50 %. Atlikto eksperimento rezultatai parodė didesnę reikšmę abiem funkcijoms (~66 %), kas rodo ryškų lavinos efektą: vieno simbolio pakeitimas įvestyje lemia radikalius išėjimo skirtumus. Nors gautos reikšmės viršija teorinę 50 % ribą, tai tikėtina susiję su taikyta skaičiavimo metodika. Šiuo požiūriu tiek HashFun, tiek SHA-256 elgiasi panašiai.
 
 ## 7. Negrįžtamumo demonstracija (hiding)
 
-Patikrinti, ar pridėjus salt prie įvesties (`input + salt`) gaunamas maišos rezultatas neleidžia praktiškai atkurti pradinio input ir ar skirtingi salt'ai duoda skirtingus hash'us.
+Šiame teste patikrinama ar pridėjus atsitiktinę salt reikšmę prie įvesties (`input + salt`) gaunamas maišos rezultatas neleidžia praktiškai atkurti pradinio input ir ar skirtingi salt'ai duoda skirtingus hash'us.
 
-Žemiau pateikti eksperimento rezultatai rodo, kad tas pats pradinis tekstas, pridėjus skirtingus salt, generuoja visiškai skirtingus hash'us ir tai patvirtina hiding savybę. Be žinomo salt, atstatyti pradinį tekstą iš vieno hash'o praktiškai neįmanoma.
+| Įvestis  | Salt'as          | HashFun hash'as                                                  | SHA-256 hash'as                                                           |
+|----------|------------------|------------------------------------------------------------------|------------------------------------------------------------------|
+| password | wE3j7ABS2znvst7w | c15bd20e68a992b44ed54d2167657f0b9079c70b3e19292876c2af0558f3a117 | f781aef635925254a907b1627ce923fb53882c2e87d521e1c7c71788bed4d279 |
+| password | CPGPqzjSYyPdUfXN | 9a9e27e0e058f9da509af2e060a8c97871b223d8260fd3f465c778027e38cf00 | c7876305f12ff3a1e41bc4ea545cfdc66bb74cde759952d6e76d5f8d1447dabd |
+| password | J14CzwHdQROGpKf8 | 91ec2679370a14aca0168e7ac5f6d1646ad06414dbea806a6dcc5ead9a162a19 | 073c655744015665a650196dbc274fd69adc432677299bfa6d3f3c29878aab3e |
+| 123      | 3ITciUEWkZJGDZph | 36461c597345f62e6179ab27b33fc0e6e98f821492287de0ef1a7426d0b22a31 | e316dba129ec115a283b0a2e89f42b684968da809a3cecd57ccda65f5fba9766 |
+| 123      | eQxpzFxZxv8WFbKO | 135d180d86a50df2645e54cb33d6c2eefef4d339bc668e94fffc514fbfbc2c33 | e1a5e6286829b065abcfeb0b002c74b2c195baf9e009a65cb73ea387cb3d56c7 |
+| 123      | UJglVSJiAYyP1OA7 | 90925ec3057386dea887303b925559bf4543c261d407b1a2eda4ddd15b6d338b | f78f089251d3b697094274aa6635bd6a88e1c7bf2b8ddce7065d09b798f55f62 |
+| a        | XDuLthwhJk1xL9ep | a06fc92dc256eeae8b791f7fbb6ef39ece8208198ff100919090ae66a707ce7a | 4c1c5b2493ae3873b91cd4aba25dded396094de6983a8fdc0e8fc0372f872aa3 |
+| a        | 9v0kmD6W5wxrr1We | 10ca5b2d9757d5ef303b0a193f106bca359cc18496edbee2fe9edfb7222e7c07 | 3dd8a6f8fd55c4c48788362bda6147d4f10fa80b090652876aaae40a8c298e7a |
+| a        | pwEw0SpTl3Jl00XS | 277385e5f613ce39d2583f2ecbd5ce376dd33715f0b0630276694a1a4596f3f2 | 2739b829aab56d51ed5e447ac31eea78c9d96500e886f08b8d8283cc41f0b004 |
 
-| Įvestis | Salt'as          | Hash'as                                                          |
-|---------|------------------|------------------------------------------------------------------|
-| pasword | pOOncF7F2H55pEUE | 80fcc33f8e238163bcae11570232e9ad310df28866cef2d0f54706b306051cbb |
-| pasword | l76rLOoqthxPu8yC | ed0e2259fde8eaf65acc316b9016cefaf67e6d86dcd1aa18cbf3c71ed5a9368a |
-| pasword | kjJ6snQ0I7X2MCWa | 2b009597db9415515ca8271ff7b9736e83616fe102c0dd98f3e6799705b4352c |
-| 123     | r36gpAswUd8SOjHq | 4f3ebcd03e36c2397d701ea6b55989919547e1e92dafc31214353286503d37f2 |
-| 123     | Wk5cQnko9EJ8FG5g | 9f53d30556cd21034ceb58e20a04aa572d3f140c224f2c161548cdcffeb1dcc9 |
-| 123     | rCXApDNNxUTA4rOT | e45a2c0ef5e5439ec024cc6775d0ad9c2cdcc62e88bde93e367026f8f0f30485 |
-| a       | AwnYSIuL6sWVHsfZ | 62ab3af5b0d3209781d3c4334cd98de8228fe13530f7472f1785e8e584ac4eac |
-| a       | zC3V6kgK2EVbHe4E | 4491c9f51b7d8c1345ee3796933fa39af1ef507f1e6572ec9c19f8e7a0054b56 |
-| a       | t7ggOCsebvov3fbQ | 564421f0695e1cb819a52d5fd16afbfdde3536a7dce978755f08497f28108847 |
+Eksperimento rezultatai rodo, kad tiek `HashFun`, tiek `SHA-256` elgiasi kaip hiding funkcijos: tas pats įvedimas su skirtingais salt'ais generuoja visiškai skirtingus hash'us. Be žinomo salt, atstatyti pradinį tekstą iš vieno hash'o praktiškai neįmanoma.
 
 ## 8. Išvados
 
-### Stipriosios pusės
+### Palyginimas su SHA‑256
 
-- Funkcija visada grąžina 256 bitų (64 hex simbolių) rezultatą, nepriklausomai nuo įvesties.
-- Deterministinė funkcija - ta pati įvestis visada duoda tą patį hash’ą.
+- Abi funkcijos grąžina 256 bitų (64 hex) rezultatus, nepriklausomai nuo įvesties.
+- Deterministiškumas panašus – ta pati įvestis visuomet duoda tą patį hash'ą.
+- Lavinos efektas: HashFun vidutiniškai ~66 % bitų pasikeitimas, SHA‑256 ~66 %, t. y. abi funkcijos reaguoja panašiai į vieno simbolio pakeitimą.
+- Kolizijų testuose nei HashFun, nei SHA‑256 neaptikta.
+- Efektyvumas: HashFun greitesnė mažoms įvestims, tačiau su dideliais failais SHA‑256 gali būti efektyvesnė dėl optimizuotų bibliotekų.
+- Hiding savybė: abiejose funkcijose pridėjus atsitiktinį salt tas pats įvesties tekstas generuoja labai skirtingus hash'us.
+
+### HashFun stipriosios pusės
+
+- Deterministinė ir visada grąžina 256 bitų (64 hex) rezultatą.
 - Vidutinis 66 % bitų pokytis rodo gerai veikianti lavinos efektą.
 - 100 000 atsitiktinių porų įvairaus ilgio nepateikė nė vienos kolizijos.
 
-### Silpnosios pusės
+### HashFun silpnosios pusės
 
 - Neištirtas kriptografinis atsparumas prieš atvirkštinę paiešką ar pasirinktas kolizijas.
 - Nors veikimas greitas, nebuvo atlikti testai su itin dideliais (>GB) failais.
