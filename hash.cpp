@@ -170,11 +170,13 @@ string ProgramStart() {
         getline(cin, input);
     }
     if (choice == 1) {
-        cout << "Iveskite failo pavadinima: " << endl;
+        string folderName = "Failai testavimui/";
         string fileName;
+        cout << "Iveskite failo pavadinima: " << endl;
         getline(cin, fileName);
 
-        ifstream file(fileName);
+        string fullPath = folderName + fileName;
+        ifstream file(fullPath);
         if (!file) {
             cerr << "Failas neatsidarė!" << endl;
             return 0;
