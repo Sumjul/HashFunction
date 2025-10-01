@@ -49,7 +49,7 @@ END
 
 ## Eksperimentinis tyrimas
 
-Šiame projekte tiriama mano sukurta HashFun. Tikslas – įvertinti jos savybes pagal užduoties reikalavimus.
+Šiame projekte tiriama mano sukurta HashFun. Tikslas – įvertinti jos savybes pagal užduoties reikalavimus ir palyginti jas su standartine **SHA-256** funkcija.
 
 ---
 
@@ -66,43 +66,64 @@ Eksperimentams sukuriau kelis failus su skirtingu turiniu:
 | `rnd1000000.txt`  | 1 000 000 atsitiktinių simbolių                               |
 | `rndF100000.txt`  | 100 000 atsitiktinių simbolių                                 |
 | `rndS100000.txt`  | Kaip rndF100000.txt, bet pakeistas 75 000-asis simbolis       |
+| `10mb.txt`        | Didžiausias failas su daugiau nei 10 000 000 simbolių         |
+
+Šie failai naudoti tiek su HashFun, tiek su SHA-256, kad būtų galima tiesiogiai palyginti rezultatus.
 
 ## 2. Išvedimo dydis
 
-Paleidau savo HashFun tuščiam failui, failui su a, failui su b ir failams su 100 000 bei 1 000 000 atsitiktinių simbolių. Kiekvienu atveju gauta 64 hex'ų eilutė. Tai atitinka 256 bitų ilgį ir įrodo, kad išvedimo dydis nepriklauso nuo įvesties.
+- **HashFun:** visada sugeneruoja 64 simbolių (256 bitų) heksadecimalinę eilutę.  
+- **SHA-256:** taip pat visada grąžina 64 simbolių (256 bitų) heksadecimalinę eilutę.
 
-| Failas          | Hash rezultatas                                                 |
-|-----------------|-----------------------------------------------------------------|
-| `blank.txt`     |e1e10ec33852dafdad0a90ef0edf56b9f7c1425813bc42d0a67386e5c1269b78 |
-| `a.txt`         |13fbc56937664ae5ce4503508cf94ba6b82eaa19b9bc3c5bb8a7950b485df478 |
-| `b.txt`         |0cce237961797622b9053b0d5e7c7c56848bcec8da55ef82c46496b265eee872 |
-| `rnd100000.txt` |bf6fb7e57c24cee30ce7d062523997b2dcef0b49b1218c91dea9fca4751126f2 |
-| `rnd1000000.txt`|afe953bc81c149bb814f8da11f69edd37b52b149d43643c1d85c4b5974b9c521 |
+| Failas          | HashFun rezultatas                                              | SHA-256 rezultatas                                                       |
+|-----------------|-----------------------------------------------------------------|-----------------------------------------------------------------|
+| `blank.txt`     |e1e10ec33852dafdad0a90ef0edf56b9f7c1425813bc42d0a67386e5c1269b78 | e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 |
+| `a.txt`         |13fbc56937664ae5ce4503508cf94ba6b82eaa19b9bc3c5bb8a7950b485df478 |ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb|
+| `b.txt`         |0cce237961797622b9053b0d5e7c7c56848bcec8da55ef82c46496b265eee872 |3e23e8160039594a33894f6564e1b1348bbd7a0088d42c4acb73eeaed59c009d|
+| `rnd100000.txt` |bf6fb7e57c24cee30ce7d062523997b2dcef0b49b1218c91dea9fca4751126f2 |c253e0ba462db43db95286964de626fcf4e931f4f5c0434e840d57598b0fc7df|
+| `rnd1000000.txt`|afe953bc81c149bb814f8da11f69edd37b52b149d43643c1d85c4b5974b9c521 |19be1f718f2145ce5e23690366f811db2793cb7c3214a76bc9c076c71247ef14|
+
+Tai įrodo, kad abi funkcijos išlaiko pastovų išvedimo ilgį nepriklausomai nuo įvesties.
 
 ## 3. Deterministiškumas
 
-Kiekvieną testinį failą hash’inau du kartus – rezultatai visada sutapo, todėl funkcija yra deterministinė.
-
+Abi funkcijos yra deterministinės – ta pati įvestis visada duoda tą patį išvedimą.
 Pavyzdys su `a.txt`, abu kartus gautas identiškas rezultatas:
 
+- **HashFun**
 13fbc56937664ae5ce4503508cf94ba6b82eaa19b9bc3c5bb8a7950b485df478
 13fbc56937664ae5ce4503508cf94ba6b82eaa19b9bc3c5bb8a7950b485df478
+
+- **SHA-256 (2 kartus):**
+ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
+ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb
 
 Tas pats galioja visiems kitiems failams (`blank.txt`, `b.txt`, `rnd100000.txt`, `rnd1000000.txt`, `rndF100000.txt`, `rndS100000.txt`).
 
 ## 4. Efektyvumas
 
-HashFun greitis buvo matuojamas naudojant `konstitucija.txt` failą. Matavau tik pačios hash funkcijos vykdymo laiką (be failo skaitymo) ir kiekvieną bandymą paleidau kelis kartus bei užrašiau vidutinę trukmę mikrosekundėmis.
+Matavau hash funkcijų veikimo laiką naudojant `konstitucija.txt` failą. Matavau tik pačios hash funkcijos vykdymo laiką (be failo skaitymo) ir kiekvieną bandymą paleidau kelis kartus bei užrašiau vidutinę trukmę mikrosekundėmis.
 
-| Įvedimo dydis (eilučių sk.) | Vidutinis veikimo laikas (µs)|
-|-----------------------------|------------------------------|
-| 1 eilutė                    | 2 µs                         |
-| 10 eilučių                  | 3 µs                         |
-| 100 eilučių                 | 23 µs                        |
-| 789 eilučių (pilnas failas) | 260 µs                       |
+| Įvedimo dydis (eilučių sk.) | HashFun vidutinis veikimo laikas (µs)| SHA-256 vidutinis veikimo laikas (µs)|
+|-----------------------------|--------------------------------------|--------------------------------------|
+| 1 eilutė                    | 17 µs                                | 2 800 µs                             |
+| 10 eilučių                  | 18 µs                                | 2 670 µs                             |
+| 100 eilučių                 | 40 µs                                | 2 800 µs                             |
+| 789 eilučių (pilnas failas) | 270 µs                               | 2 850 µs                             |
+
+Papildomas testas su 10 MB dydžio `10mb.txt`:
+
+| Įvedimo dydis (eilučių sk.)                 | HashFun vidutinis veikimo laikas (µs)| SHA-256 vidutinis veikimo laikas (µs)|
+|---------------------------------------------|--------------------------------------|--------------------------------------|
+| apie 100 000 eilučių                        | 13 900  µs                           | 5 500 µs                             |
+| apie 270 000 eilučių (pilnas failas)        | 36 000 µs                            | 8 000 µs                             |
+
+Rezultatai rodo, kad mažiems failams HashFun yra daug greitesnė už SHA-256. Tačiau su dideliais failais SHA-256 tampa efektyvesnė, nes HashFun veikimo laikas sparčiai auga.
 
 Žemiau rezultatai pateikti naudojant grafiką:
 ![HashFun veikimo laikas](grafikas.png)
+
+----------------------------------------
 
 ## 5. Kolizijų paieška
 

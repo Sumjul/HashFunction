@@ -5,6 +5,8 @@
 #include <limits>
 #include <chrono>
 #include <random>
+#include <iomanip>
+#include <openssl/sha.h>
 using namespace std;
 
 string HashFun(const string& str)
@@ -30,12 +32,13 @@ string HashFun(const string& str)
         out4[i] = h[i] ^ (h[i+4] << 1) ^ (h[(i+2)%8] >> 1);
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
-    //cout << "Hash funkcijos veikimo laikas: " << duration.count() << " microseconds" << endl;
-
     char out [65];
     snprintf(out, sizeof(out), "%016llx%016llx%016llx%016llx", out4[0], out4[1], out4[2], out4[3]);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+    cout << "Hash funkcijos veikimo laikas: " << duration.count() << " microseconds" << endl;
+    
     return string(out);
 }
 
@@ -181,9 +184,29 @@ string ProgramStart()
     return input;
 }
 
+string sha256(const string &input)
+{
+    auto start = std::chrono::high_resolution_clock::now();
+
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256((const unsigned char*)input.c_str(), input.size(), hash);
+    ostringstream oss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+        oss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start);
+    cout << "Hash funkcijos veikimo laikas: " << duration.count() << " microseconds" << endl;
+
+    return oss.str(); 
+}
+
+
 int main()
 {
     string input = ProgramStart();
-    cout << "Hash funkcija: " << HashFun(input) << endl;
+    cout << "Hashfun rezultatas: " << HashFun(input) << endl;
+    cout << "SH-A256 rezultatas: " << sha256(input) << endl;
     return 0;
 }
